@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Durability</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #f3f4f6; margin: 0; padding: 20px; color: #333; }
+    h1 { text-align: center; margin-bottom: 30px; }
+    .question { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .question:hover { transform: scale(1.01); }
+    button { display: block; width: 100%; margin: 8px 0; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 15px; background: #e5e7eb; transition: background 0.3s, transform 0.2s; }
+    button:hover { background: #d1d5db; transform: scale(1.02); }
+    .correct { background: #4ade80 !important; color: #fff; animation: correctFlash 0.6s; }
+    .wrong { background: #f87171 !important; color: #fff; animation: wrongShake 0.6s; }
+    @keyframes correctFlash { from { opacity: 0.5; } to { opacity: 1; } }
+    @keyframes wrongShake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+    .explication { margin-top: 10px; padding: 10px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 5px; display: none; }
+</style>
+</head>
+<body>
+<h1>Quiz – Métier Durability</h1>
+<div id="quiz"></div>
+<script>
+const questions = [
+ {
+  q: "Dans le cycle de développement industriel, quand l'ingénieur calcul intervient-il prioritairement ?",
+  answers: [
+   { text: "Uniquement après la mise en vente pour analyser les retours clients.", correct: false, exp: "On peut intervenir suite à des casses clients, mais ce n'est pas la majorité des cas et heureusement." },
+   { text: "Une fois que le prototype physique a déjà cassé en test laboratoire.", correct: false, exp: "On peut intervenir à ca moment la. On doit même intervenir. Mais l'objectif central est la prédiction pour éviter ce type de probleme et que le premier prototype soit le bon." },
+   { text: "En amont, pour prédire et prévenir la casse avant même que le véhicule ne soit fabriqué.", correct: true, exp: "La réponse C est la bonne car l'objectif central est la prédiction pour éviter de fabriquer des prototypes inutiles." },
+   { text: "Seulement lors de la phase de design esthétique pour valider les couleurs.", correct: false, exp: "La réponse C est la bonne car l'objectif central est la prédiction, celle-ci concerne le style, pas la structure." }
+  ]
+ },
+ {
+  q: "Que signifie concrètement l'utilisation de la méthode FEM / FEA (Éléments Finis) ?",
+  answers: [
+   { text: "C'est une technique de rendu visuel pour rendre les pièces plus réalistes à l'écran.", correct: false, exp: "Vraiement ?" },
+   { text: "C'est un test de résistance chimique des matériaux aux acides.", correct: false, exp: "Il y a des tests qui sont conduit pour ca mais ce n'est pas du tout le role de la simulation et encore moins en durability." },
+   { text: "C'est le découpage d'une pièce virtuelle en milliers de petits éléments pour calculer les déformations, contraintes...", correct: true, exp: "La réponse C est exacte selon les résultats souhaités, mais ceux ci doivent etre analysés et interprété par rapport aux hypotheses de calculs ou erreurs de simulation." },
+   { text: "C'est une méthode de gestion de projet pour optimiser son temps de travail.", correct: false, exp: "Et non, ici on optimise les pièces et le temps de developpement." }
+  ]
+ },
+ {
+  q: "Parmi les données suivantes, quels sont les 'input' indispensable reçu par l'ingénieur ?",
+  answers: [
+   { text: "Le prix de vente estimé du véhicule et le type de pneu.", correct: false, exp: "Pour simuler la solidité, l'ingénieur a impérativement besoin de la géométrie (3D) et de la nature du matériau. Les autres réponses n'ont aucun impact sur le calcul." },
+   { text: "Les propriétés des matériaux et le fichier 3D de l'assemblage.", correct: true, exp: "Pour simuler la solidité, l'ingénieur a impérativement besoin de la géométrie (3D) et de la nature du matériau." },
+   { text: "Le maillage, les efforts que va subir la piece et le nouveau 3D.", correct: true, exp: "Si c'est une évolution, nous repartons de calculs déjà existants." },
+   { text: "La liste des options multimédia (GPS, Bluetooth) installées.", correct: false, exp: "Les autres réponses sont des informations commerciales ou de confort sans impact sur le calcul de durabilité." }
+  ]
+ },
+ {
+  q: "Quel est l'impact direct de ce métier sur l'environnement et la conception ?",
+  answers: [
+   { text: "Il permet d'ajouter un maximum de matière pour être sûr que rien ne casse.", correct: false, exp: "L'optimisation (réponse C) est un point clé : on veut du solide mais léger." },
+   { text: "Il ralentit le développement car les calculs durent plusieurs heures.", correct: false, exp: "L'optimisation (réponse C) est un point clé : on veut du solide mais léger." },
+   { text: "Il permet de diminuer le poids des pièces tout en les rendant plus fiables.", correct: true, exp: "L'optimisation (réponse C) est un point clé : on veut du solide mais léger." },
+   { text: "Il remplace les ingénieurs d'essais.", correct: false, exp: "La D est fausse car il doit toujours coopérer avec les ingénieurs d'essais." }
+  ]
+ },
+ {
+  q: "Que recherche précisément l'ingénieur lors de la phase 'Analyse du résultat' ?",
+  answers: [
+   { text: "Si la pièce est esthétiquement plaisante sous tous les angles.", correct: false, exp: "La réponse B décrit le cœur de l'analyse technique." },
+   { text: "Les zones de concentration de contraintes où la pièce risque de se fissurer.", correct: true, exp: "La réponse B décrit le cœur de l'analyse technique : détecter les points faibles." },
+   { text: "Si le logiciel a terminé le calcul rapidement ou a échoué.", correct: false, exp: "On le regarde. Surtout dans des calculs d'optimisation ou beaucoup de calculs vont etre lancés" },
+   { text: "Généré de belles images pour faire un joli rapport à partager avec les concepteurs.", correct: false, exp: "On peut le faire mais c'est surtout voir si la piece risque de casser ou si on peut réduire son poids." }
+  ]
+ },
+ {
+  q: "Si un risque de rupture est détecté, quelle solution technique privilégier ?",
+  answers: [
+   { text: "Demander aux clients de ne pas utiliser le véhicule sur des routes abîmées.", correct: false, exp: "La A est impossible commercialement." },
+   { text: "Augmenter la taille de la pièce défaillante.", correct: false, exp: "Cette répons epeut fonctionner, mais est lourde et peut même agraver la situation en cas de forte vibrations." },
+   { text: "Proposer un renfort sur une zone précise ou changer de matériau.", correct: true, exp: "L'ingénieur doit être force de proposition avec des modifications ciblées." },
+   { text: "Cacher le problème en espérant que le prototype résiste lors des tests.", correct: false, exp: "La D est une faute professionnelle grave." }
+  ]
+ },
+ {
+  q: "Dans l'exemple du bus, quel phénomène physique est surveillé ?",
+  answers: [
+   { text: "La vitesse de pointe du véhicule en descente.", correct: false, exp: "La réponse C est le cœur du métier durability." },
+   { text: "L'usure des tissus des sièges passagers.", correct: false, exp: "Les autres réponses ne relèvent pas du calcul de structure." },
+   { text: "La fatigue du métal entraînant une rupture après des milliers d'heures de vibrations.", correct: true, exp: "La réponse C est le cœur du métier durability : résistance à la fatigue." },
+   { text: "La consommation électrique du véhicule.", correct: false, exp: "Les autres réponses ne relèvent pas du calcul de structure." }
+  ]
+ },
+ {
+  q: "Quel binôme de compétences définit le mieux ce métier ?",
+  answers: [
+   { text: "Force physique et conduite de prototypes.", correct: false, exp: "La réponse B est validée par les sources : rigueur et coopération." },
+   { text: "Rigueur mathématique/informatique et capacité de coopération avec d'autres métiers.", correct: true, exp: "La réponse B est validée par les sources : travail sur ordinateur, rigueur et discussion." },
+   { text: "Dessin artistique et psychologie du consommateur.", correct: false, exp: "La C n'a aucun lien." },
+   { text: "Expertise en vente et négociation de contrats.", correct: false, exp: "La D relève du commercial, pas du calcul." }
+  ]
+ },
+ {
+  q: "Pourquoi l'étape de 'nettoyage du modèle 3D' est-elle nécessaire ?",
+  answers: [
+   { text: "Pour simplifier la géométrie et ne garder que les volumes utiles au calcul physique.", correct: true, exp: "On simplifie le modèle pour que le calcul soit réalisable et précis." },
+   { text: "Pour enlever les virus informatiques du fichier reçu.", correct: false, exp: "La B est hors sujet." },
+   { text: "Pour changer la couleur de la pièce afin qu'elle soit plus lisible.", correct: false, exp: "La C est visuelle." },
+   { text: "Pour supprimer les pièces que l'ingénieur n'aime pas.", correct: false, exp: "La D est subjective." }
+  ]
+ },
+ {
+  q: "Quel est l'avantage économique majeur de la simulation de durabilité ?",
+  answers: [
+   { text: "Elle permet de se passer totalement de l'achat de métaux.", correct: false, exp: "La C est l'argument majeur : réduction des prototypes." },
+   { text: "Elle permet d'augmenter le budget publicitaire.", correct: false, exp: "Sans rapport." },
+   { text: "Elle évite de fabriquer, tester et casser de multiples prototypes réels coûteux.", correct: true, exp: "La réduction des coûts de laboratoire est l'argument majeur." },
+   { text: "Elle permet de licencier les autres types d'ingénieurs.", correct: false, exp: "La D est fausse." }
+  ]
+ },
+ {
+  q: "Un ingénieur calcul durability peut se contenter de valider une pièce si elle ne casse pas sous un poids statique.",
+  answers: [
+   { text: "VRAI.", correct: true, exp: "C'est vrai car même si il doit aussi prendre en compte les vibrations, les chocs, les conditions extrêmes... Parfois une analyse avec un poids statique peut quand même etre suffisante. C'est ce que l'on appele un cas enveloppe." },
+   { text: "FAUX.", correct: false, exp: "C'est vrai car même si il doit aussi prendre en compte les vibrations, les chocs, les conditions extrêmes... Parfois une analyse avec un poids statique peut quand même etre suffisante. C'est ce que l'on appele un cas enveloppe." }
+  ]
+ },
+ {
+  q: "Le métier nécessite une formation spécialisée avec un post-doctorat.",
+  answers: [
+ { text: "VRAI.", correct: false, exp: "C'est faux, un bac scientifique suivi d'une école d'ingénieur ou l'université dans le domaine de la mécanique est suffisant." },
+ { text: "FAUX.", correct: true, exp: "Bravo, le parcours type est une école d'ingénieur ou l'université dans ces domaines techniques après un bac général scientifique." }
+  ]
+ }
+];
+
+const quizDiv = document.getElementById("quiz");
+questions.forEach(question => {
+ const container = document.createElement("div");
+ container.className = "question";
+ const h = document.createElement("h3");
+ h.textContent = question.q;
+ container.appendChild(h);
+ const explication = document.createElement("div");
+ explication.className = "explication";
+ question.answers.forEach(ans => {
+  const btn = document.createElement("button");
+  btn.textContent = ans.text;
+  btn.addEventListener("click", () => {
+   btn.classList.add(ans.correct ? "correct" : "wrong");
+   explication.style.display = "block";
+   explication.textContent = ans.exp;
+  });
+  container.appendChild(btn);
+ });
+ container.appendChild(explication);
+ quizDiv.appendChild(container);
+});
+</script>
+</body>
+</html>
